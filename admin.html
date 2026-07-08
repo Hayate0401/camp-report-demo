@@ -1041,6 +1041,7 @@ function formatDt(dt) {
 }
 function stripHtml(html) { return html.replace(/<[^>]+>/g, ''); }
 function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
