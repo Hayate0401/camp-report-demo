@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理者パネル | 夏期強化合宿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue: #1a6fc4;
+    --blue-dark: #0f4d8a;
+    --blue-light: #e8f2fb;
+    --gray-bg: #f5f6f8;
+    --gray-border: #dde1e7;
+    --gray-text: #6b7280;
+    --text: #1a1d23;
+    --white: #ffffff;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --warning: #d97706;
+  }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--gray-bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ===== LOGIN ===== */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f4d8a 0%, #1a6fc4 100%);
+  }
+  .login-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  .login-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--blue-dark);
+    margin-bottom: 0.25rem;
+  }
+  .login-sub {
+    font-size: 0.8rem;
+    color: var(--gray-text);
+    margin-bottom: 1.75rem;
+  }
+  .login-card input[type="password"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--gray-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.2s;
+  }
+  .login-card input:focus { outline: none; border-color: var(--blue); }
+  .login-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .login-btn:hover { background: var(--blue-dark); }
+  .login-error {
+    color: var(--danger);
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    display: none;
+  }
+
+  /* ===== HEADER ===== */
+  #app { display: none; }
+  header {
+    background: var(--blue-dark);
+    color: white;
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .header-title { font-weight: 700; font-size: 1rem; }
+  .header-title span { font-size: 0.7rem; font-weight: 400; opacity: 0.7; margin-left: 0.5rem; }
+  .header-actions { display: flex; gap: 0.5rem; align-items: center; }
+  .btn-sm {
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid;
+    transition: all 0.2s;
+  }
+  .btn-outline-white { background: transparent; border-color: rgba(255,255,255,0.4); color: white; }
+  .btn-outline-white:hover { background: rgba(255,255,255,0.1); }
+
+  /* ===== QUICK LINKS ===== */
+  .quick-links { background: white; border-bottom: 1px solid var(--gray-border); }
+  .quick-links-photo {
+    padding: 0.5rem 1rem; display: flex; gap: 0.5rem; align-items: center;
+    border-bottom: 1px solid var(--gray-border); flex-wrap: wrap;
+  }
+  .quick-links-btns {
+    padding: 0.5rem 1rem; display: flex; gap: 0.5rem; align-items: center;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .quick-links-btns::-webkit-scrollbar { display: none; }
+  .quick-links-label { font-size: 0.75rem; color: var(--gray-text); font-weight: 500; white-space: nowrap; }
+  .quick-link-input {
+    flex: 1; min-width: 160px; max-width: 300px;
+    padding: 0.35rem 0.75rem; border: 1px solid var(--gray-border);
+    border-radius: 6px; font-size: 0.8rem; font-family: inherit;
+  }
+  .quick-link-btn {
+    padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.8rem;
+    font-family: inherit; font-weight: 500; cursor: pointer; border: 1.5px solid;
+    text-decoration: none; display: inline-flex; align-items: center;
+    gap: 0.3rem; white-space: nowrap; flex-shrink: 0;
+  }
+  .btn-blue { background: var(--blue); border-color: var(--blue); color: white; }
+  .btn-blue:hover { background: var(--blue-dark); border-color: var(--blue-dark); }
+  .btn-green { background: var(--success); border-color: var(--success); color: white; }
+  .btn-green:hover { background: #15803d; }
+
+  /* ===== MAIN CONTENT ===== */
+  main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem; }
+
+  /* ===== FORM CARD ===== */
+  .card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--gray-border);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--gray-border);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--blue-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card-body { padding: 1.25rem; }
+
+  .form-row { display: flex; gap: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+  .form-group { display: flex; flex-direction: column; gap: 0.35rem; flex: 1; min-width: 200px; }
+  .form-label { font-size: 0.8rem; font-weight: 500; color: var(--gray-text); }
+  .form-control {
+    padding: 0.55rem 0.85rem;
+    border: 1.5px solid var(--gray-border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    background: white;
+    color: var(--text);
+  }
+  .form-control:focus { outline: none; border-color: var(--blue); }
+
+  /* ===== RICH TEXT EDITOR ===== */
+  .editor-toolbar {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border: 1.5px solid var(--gray-border);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    background: var(--gray-bg);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .tb-btn {
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--gray-border);
+    border-radius: 5px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.15s;
+    line-height: 1;
+    color: var(--text);
+  }
+  .tb-btn:hover { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
+  .tb-sep { width: 1px; height: 24px; background: var(--gray-border); margin: 0 0.15rem; }
+  .color-picker-wrap { position: relative; display: inline-flex; align-items: center; }
+  .color-picker-wrap input[type="color"] {
+    width: 26px; height: 26px; border: 1px solid var(--gray-border);
+    border-radius: 5px; cursor: pointer; padding: 1px;
+    background: white;
+  }
+  .font-size-select {
+    padding: 0.3rem 0.4rem;
+    border: 1px solid var(--gray-border);
+    border-radius: 5px;
+    font-size: 0.78rem;
+    font-family: inherit;
+    background: white;
+    cursor: pointer;
+    color: var(--text);
+  }
+  #editor {
+    min-height: 180px;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--gray-border);
+    border-radius: 0 0 8px 8px;
+    outline: none;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--text);
+  }
+  #editor:focus { border-color: var(--blue); }
+  #editor a { color: var(--blue); }
+
+  /* ===== MEDIA UPLOAD ===== */
+  .upload-zone {
+    border: 2px dashed var(--gray-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 0.75rem;
+  }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--blue); background: var(--blue-light); }
+  .upload-zone-text { font-size: 0.85rem; color: var(--gray-text); }
+  .upload-zone-text strong { color: var(--blue); }
+  .media-preview { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  .media-thumb {
+    position: relative;
+    width: 80px; height: 80px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--gray-border);
+  }
+  .media-thumb img, .media-thumb video { width: 100%; height: 100%; object-fit: cover; }
+  .media-thumb .remove-media {
+    position: absolute; top: 2px; right: 2px;
+    width: 18px; height: 18px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ===== SUBMIT BUTTON ===== */
+  .btn-primary {
+    padding: 0.65rem 1.75rem;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-danger {
+    padding: 0.4rem 0.75rem;
+    background: white;
+    color: var(--danger);
+    border: 1.5px solid var(--danger);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-danger:hover { background: var(--danger); color: white; }
+  .btn-edit {
+    padding: 0.4rem 0.75rem;
+    background: white;
+    color: var(--blue);
+    border: 1.5px solid var(--blue);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-edit:hover { background: var(--blue-light); }
+  .btn-move {
+    padding: 0.35rem 0.6rem;
+    background: white;
+    color: var(--gray-text);
+    border: 1.5px solid var(--gray-border);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-move:hover { background: var(--gray-bg); }
+
+  /* ===== POST LIST ===== */
+  .post-item {
+    border-bottom: 1px solid var(--gray-border);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .post-item:last-child { border-bottom: none; }
+  .post-meta { flex: 1; min-width: 0; }
+  .post-datetime {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--blue);
+    margin-bottom: 0.15rem;
+  }
+  .post-title-text {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+    color: var(--text);
+  }
+  .post-excerpt {
+    font-size: 0.82rem;
+    color: var(--gray-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 480px;
+  }
+  .post-actions { display: flex; gap: 0.4rem; align-items: center; flex-shrink: 0; }
+
+  /* ===== EDIT MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  }
+  .modal-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--gray-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+  }
+  .modal-title { font-weight: 700; font-size: 1rem; color: var(--blue-dark); }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: var(--gray-text);
+    line-height: 1;
+    padding: 0.25rem;
+  }
+  .modal-body { padding: 1.25rem; }
+  .modal-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--gray-border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  /* toast */
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--text);
+    color: white;
+    padding: 0.7rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .empty-state {
+    text-align: center;
+    padding: 2.5rem;
+    color: var(--gray-text);
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-title">🏃 夏期強化合宿</div>
+    <div class="login-sub">管理者パネル — スタッフのみ</div>
+    <input type="password" id="admin-pw" placeholder="管理者パスワード" />
+    <button class="login-btn" onclick="adminLogin()">ログイン</button>
+    <div class="login-error" id="login-err">パスワードが違います</div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+  <header>
+    <div class="header-title">管理者パネル <span>夏期強化合宿 活動レポート</span></div>
+    <div class="header-actions">
+      <a href="viewer.html" target="_blank" class="btn-sm btn-outline-white">閲覧ページを開く</a>
+      <button class="btn-sm btn-outline-white" onclick="adminLogout()">ログアウト</button>
+    </div>
+  </header>
+
+  <!-- Quick links bar -->
+  <div class="quick-links">
+    <div class="quick-links-photo">
+      <span class="quick-links-label">📁 写真フォルダ:</span>
+      <input type="url" id="photo-url-input" class="quick-link-input" placeholder="https://drive.google.com/drive/folders/..." />
+      <button class="quick-link-btn btn-blue" onclick="savePhotoUrl()">保存</button>
+      <button class="quick-link-btn btn-blue" id="photo-open-btn" onclick="openPhotoFolder()" style="display:none">📂 開く</button>
+    </div>
+    <div class="quick-links-btns">
+      <a href="schedule.html" target="_blank" class="quick-link-btn btn-green">📅 スケジュール確認</a>
+      <button class="quick-link-btn btn-green" onclick="openScheduleEdit()">✏️ スケジュール編集</button>
+      <button class="quick-link-btn" style="background:#dc2626;border-color:#dc2626;color:white;" onclick="openAllergyEdit()">🚨 アレルギー管理</button>
+      <button class="quick-link-btn btn-blue" onclick="openCancelEdit()">📋 キャンセル規約編集</button>
+      <a href="cancel.html" target="_blank" class="quick-link-btn" style="background:white;border-color:var(--gray-border);color:var(--gray-text);">↗ 規約ページを開く</a>
+    </div>
+  </div>
+
+  <main>
+    <!-- 新規投稿フォーム -->
+    <div class="card">
+      <div class="card-header">📝 新規レポート投稿</div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">投稿日時</label>
+            <input type="datetime-local" id="post-datetime" class="form-control" />
+          </div>
+          <div class="form-group" style="flex: 2;">
+            <label class="form-label">タイトル</label>
+            <input type="text" id="post-title" class="form-control" placeholder="例: 3日目午前練習" />
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0.75rem;">
+          <label class="form-label">本文</label>
+          <div class="editor-toolbar" id="editor-toolbar">
+            <button class="tb-btn" onclick="fmt('bold')" title="太字"><b>B</b></button>
+            <button class="tb-btn" onclick="fmt('italic')" title="斜体"><i>I</i></button>
+            <button class="tb-btn" onclick="fmt('underline')" title="下線"><u>U</u></button>
+            <div class="tb-sep"></div>
+            <select class="font-size-select" onchange="setFontSize(this.value)">
+              <option value="">文字サイズ</option>
+              <option value="1">小</option>
+              <option value="3">標準</option>
+              <option value="5">大</option>
+              <option value="7">特大</option>
+            </select>
+            <div class="color-picker-wrap" title="文字色">
+              <input type="color" id="text-color" value="#1a1d23" onchange="setColor(this.value)" />
+            </div>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="insertLink()">🔗 リンク</button>
+          </div>
+          <div id="editor" contenteditable="true" data-placeholder="本文を入力..."></div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">画像・動画</label>
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
+            <div class="upload-zone-text">クリックまたはドラッグ&ドロップ<br><strong>画像・動画</strong>をアップロード（複数可）</div>
+          </div>
+          <input type="file" id="file-input" multiple accept="image/*,video/*" style="display:none" onchange="handleFiles(this.files)" />
+          <div class="media-preview" id="media-preview"></div>
+        </div>
+
+        <button class="btn-primary" onclick="submitPost()">投稿する</button>
+      </div>
+    </div>
+
+    <!-- 投稿一覧 -->
+    <div class="card">
+      <div class="card-header">📋 投稿済み記事の管理</div>
+      <div id="post-list"></div>
+    </div>
+  </main>
+</div>
+
+<!-- 編集モーダル -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">✏️ 記事を編集</span>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">投稿日時</label>
+          <input type="datetime-local" id="edit-datetime" class="form-control" />
+        </div>
+        <div class="form-group" style="flex:2;">
+          <label class="form-label">タイトル</label>
+          <input type="text" id="edit-title" class="form-control" />
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0.75rem;">
+        <label class="form-label">本文</label>
+        <div class="editor-toolbar">
+          <button class="tb-btn" onclick="fmt2('bold')"><b>B</b></button>
+          <button class="tb-btn" onclick="fmt2('italic')"><i>I</i></button>
+          <button class="tb-btn" onclick="fmt2('underline')"><u>U</u></button>
+          <div class="tb-sep"></div>
+          <select class="font-size-select" onchange="setFontSize2(this.value)">
+            <option value="">文字サイズ</option>
+            <option value="1">小</option>
+            <option value="3">標準</option>
+            <option value="5">大</option>
+            <option value="7">特大</option>
+          </select>
+          <input type="color" id="edit-text-color" value="#1a1d23" onchange="setColor2(this.value)" style="width:26px;height:26px;border:1px solid var(--gray-border);border-radius:5px;cursor:pointer;padding:1px;" />
+          <div class="tb-sep"></div>
+          <button class="tb-btn" onclick="insertLink2()">🔗 リンク</button>
+        </div>
+        <div id="edit-editor" contenteditable="true" style="min-height:160px;padding:0.75rem 1rem;border:1.5px solid var(--gray-border);border-radius:0 0 8px 8px;outline:none;font-family:inherit;font-size:0.95rem;line-height:1.75;color:var(--text);"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">画像・動画（追加）</label>
+        <div class="upload-zone" onclick="document.getElementById('edit-file-input').click()" style="padding:1rem;">
+          <div class="upload-zone-text"><strong>クリックして追加</strong></div>
+        </div>
+        <input type="file" id="edit-file-input" multiple accept="image/*,video/*" style="display:none" onchange="handleEditFiles(this.files)" />
+        <div class="media-preview" id="edit-media-preview"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-edit" onclick="closeEditModal()">キャンセル</button>
+      <button class="btn-primary" onclick="saveEdit()">保存する</button>
+    </div>
+  </div>
+</div>
+
+<!-- スケジュール編集モーダル -->
+<div class="modal-overlay" id="schedule-modal">
+  <div class="modal" style="max-width:720px;">
+    <div class="modal-header">
+      <span class="modal-title">📅 スケジュール編集</span>
+      <button class="modal-close" onclick="closeScheduleModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--gray-text);margin-bottom:1rem;">変更はリアルタイムに保存されます。閲覧ページ（schedule.html）に即時反映されます。</p>
+      <div id="schedule-editor"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="closeScheduleModal(); showToast('スケジュールを保存しました');">完了</button>
+    </div>
+  </div>
+</div>
+
+<!-- アレルギー編集モーダル -->
+<div class="modal-overlay" id="allergy-modal">
+  <div class="modal" style="max-width:860px;">
+    <div class="modal-header">
+      <span class="modal-title">🚨 アレルギーリスト編集</span>
+      <button class="modal-close" onclick="closeAllergyModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:8px;padding:0.75rem 1rem;margin-bottom:1rem;">
+        <div style="font-size:0.82rem;font-weight:700;color:var(--blue-dark);margin-bottom:0.4rem;">📥 CSVからインポート</div>
+        <div style="font-size:0.78rem;color:var(--gray-text);margin-bottom:0.5rem;">列順：氏名, グループ, アレルゲン（・区切り）, 重症度（高/中/低）, 対応・備考</div>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <input type="file" id="allergy-csv-input" accept=".csv" style="font-size:0.82rem;font-family:inherit;" onchange="importAllergyCSV(this)" />
+          <button onclick="downloadAllergyCSV()" style="padding:0.3rem 0.75rem;background:white;border:1.5px solid var(--blue);border-radius:6px;font-size:0.78rem;font-family:inherit;color:var(--blue);cursor:pointer;">↓ 現在のデータをCSV出力</button>
+        </div>
+      </div>
+      <p style="font-size:0.82rem;color:var(--gray-text);margin-bottom:0.4rem;">または直接入力：アレルゲンは「・」で区切ってください（例：卵・乳・小麦）</p>
+      <div style="font-size:0.75rem;color:var(--gray-text);margin-bottom:0.75rem;display:flex;gap:0.5rem;">
+        <span style="width:100px;">氏名</span><span style="width:90px;">グループ</span><span style="flex:2;">アレルゲン</span><span style="width:60px;">重症度</span><span style="flex:2;">対応・備考</span>
+      </div>
+      <div id="allergy-editor"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="closeAllergyModal(); showToast('アレルギーリストを保存しました');">完了</button>
+    </div>
+  </div>
+</div>
+
+<!-- キャンセル規約編集モーダル -->
+<div class="modal-overlay" id="cancel-modal">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-header">
+      <span class="modal-title">📋 キャンセル規約編集</span>
+      <button class="modal-close" onclick="closeCancelModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--gray-text);margin-bottom:1rem;">変更は保存ボタンを押すと閲覧ページ（cancel.html）に反映されます。</p>
+      <div id="cancel-editor"></div>
+      <button onclick="addCancelRule()" style="margin-top:0.75rem;width:100%;padding:0.55rem;background:white;border:1.5px dashed var(--blue);border-radius:8px;cursor:pointer;color:var(--blue);font-size:0.88rem;font-family:inherit;font-weight:500;">+ 項目を追加</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="closeCancelModal(); showToast('キャンセル規約を保存しました');">保存する</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<style>
+  #editor:empty:before {
+    content: attr(data-placeholder);
+    color: #9ca3af;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+const ADMIN_PW = 'nmt400';
+const SCHEDULE_URL = 'https://example.com/schedule';
+
+let newMediaFiles = [];
+let editMediaFiles = [];
+let editingId = null;
+
+// ===== AUTH =====
+function adminLogin() {
+  const pw = document.getElementById('admin-pw').value;
+  if (pw === ADMIN_PW) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initApp();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+document.getElementById('admin-pw').addEventListener('keydown', e => { if (e.key === 'Enter') adminLogin(); });
+function adminLogout() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('admin-pw').value = '';
+}
+
+function initApp() {
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  document.getElementById('post-datetime').value = local.toISOString().slice(0, 16);
+
+  const savedUrl = localStorage.getItem('photo_folder_url');
+  if (savedUrl) {
+    document.getElementById('photo-url-input').value = savedUrl;
+    document.getElementById('photo-open-btn').style.display = 'inline-flex';
+  }
+  renderPostList();
+}
+
+// ===== QUICK LINKS =====
+function savePhotoUrl() {
+  const url = document.getElementById('photo-url-input').value.trim();
+  if (url) {
+    localStorage.setItem('photo_folder_url', url);
+    document.getElementById('photo-open-btn').style.display = 'inline-flex';
+    showToast('URLを保存しました');
+  }
+}
+function openPhotoFolder() {
+  const url = localStorage.getItem('photo_folder_url');
+  if (url) window.open(url, '_blank');
+}
+function openScheduleEdit() {
+  renderScheduleEditor();
+  document.getElementById('schedule-modal').classList.add('active');
+}
+function closeScheduleModal() {
+  document.getElementById('schedule-modal').classList.remove('active');
+}
+
+function getSchedule() { return JSON.parse(localStorage.getItem('camp_schedule') || '[]'); }
+function saveSchedule(s) { localStorage.setItem('camp_schedule', JSON.stringify(s)); }
+
+function renderScheduleEditor() {
+  const days = getSchedule();
+  const el = document.getElementById('schedule-editor');
+  el.innerHTML = days.map((day, di) => `
+    <div style="border:1px solid var(--gray-border);border-radius:8px;margin-bottom:0.75rem;overflow:hidden;">
+      <div style="background:var(--blue-light);padding:0.6rem 0.9rem;display:flex;gap:0.5rem;align-items:center;">
+        <input type="text" value="${esc(day.label)}" placeholder="例：1日目（8/8）" onchange="updateDayLabel(${di}, this.value)"
+          style="flex:1;padding:0.3rem 0.6rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.85rem;" />
+        <input type="text" value="${esc(day.date||'')}" placeholder="日付" onchange="updateDayDate(${di}, this.value)"
+          style="width:100px;padding:0.3rem 0.6rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.85rem;" />
+        <button onclick="removeDay(${di})" style="padding:0.25rem 0.6rem;background:white;border:1px solid var(--gray-border);border-radius:5px;cursor:pointer;color:var(--danger);font-size:0.78rem;">削除</button>
+      </div>
+      <div style="padding:0.6rem 0.9rem;">
+        ${(day.items||[]).map((item, ii) => `
+          <div style="display:flex;gap:0.4rem;margin-bottom:0.4rem;align-items:center;">
+            <input type="text" value="${esc(item.time)}" placeholder="時間" onchange="updateItem(${di},${ii},'time',this.value)"
+              style="width:80px;padding:0.3rem 0.5rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.82rem;" />
+            <input type="text" value="${esc(item.content)}" placeholder="内容" onchange="updateItem(${di},${ii},'content',this.value)"
+              style="flex:2;padding:0.3rem 0.5rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.82rem;" />
+            <input type="text" value="${esc(item.note||'')}" placeholder="備考" onchange="updateItem(${di},${ii},'note',this.value)"
+              style="flex:1;padding:0.3rem 0.5rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.82rem;" />
+            <button onclick="removeItem(${di},${ii})" style="padding:0.25rem 0.5rem;background:white;border:1px solid var(--gray-border);border-radius:5px;cursor:pointer;color:var(--danger);font-size:0.78rem;">✕</button>
+          </div>`).join('')}
+        <button onclick="addItem(${di})" style="margin-top:0.3rem;padding:0.3rem 0.75rem;background:white;border:1px dashed var(--blue);border-radius:5px;cursor:pointer;color:var(--blue);font-size:0.8rem;font-family:inherit;">+ 行を追加</button>
+      </div>
+    </div>`).join('') + `<button onclick="addDay()" style="width:100%;padding:0.55rem;background:white;border:1.5px dashed var(--blue);border-radius:8px;cursor:pointer;color:var(--blue);font-size:0.88rem;font-family:inherit;font-weight:500;">+ 日程を追加</button>`;
+}
+
+function updateDayLabel(di, v) { const s=getSchedule(); s[di].label=v; saveSchedule(s); }
+function updateDayDate(di, v) { const s=getSchedule(); s[di].date=v; saveSchedule(s); }
+function updateItem(di, ii, key, v) { const s=getSchedule(); s[di].items[ii][key]=v; saveSchedule(s); }
+function removeDay(di) { const s=getSchedule(); s.splice(di,1); saveSchedule(s); renderScheduleEditor(); }
+function removeItem(di, ii) { const s=getSchedule(); s[di].items.splice(ii,1); saveSchedule(s); renderScheduleEditor(); }
+function addDay() { const s=getSchedule(); s.push({label:'新しい日程',date:'',items:[]}); saveSchedule(s); renderScheduleEditor(); }
+function addItem(di) { const s=getSchedule(); s[di].items.push({time:'',content:'',note:''}); saveSchedule(s); renderScheduleEditor(); }
+
+// アレルギー管理
+function getAllergy() { return JSON.parse(localStorage.getItem('camp_allergy') || '[]'); }
+function saveAllergy(a) { localStorage.setItem('camp_allergy', JSON.stringify(a)); }
+
+function openAllergyEdit() {
+  renderAllergyEditor();
+  document.getElementById('allergy-modal').classList.add('active');
+}
+function closeAllergyModal() {
+  document.getElementById('allergy-modal').classList.remove('active');
+}
+function renderAllergyEditor() {
+  const data = getAllergy();
+  const el = document.getElementById('allergy-editor');
+  el.innerHTML = data.map((r, i) => `
+    <div style="display:flex;gap:0.4rem;margin-bottom:0.4rem;align-items:center;flex-wrap:wrap;">
+      <input type="text" value="${esc(r.name)}" placeholder="氏名" onchange="updateAllergy(${i},'name',this.value)"
+        style="width:100px;padding:0.3rem 0.5rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.82rem;" />
+      <input type="text" value="${esc(r.group||'')}" placeholder="グループ" onchange="updateAllergy(${i},'group',this.value)"
+        style="width:90px;padding:0.3rem 0.5rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.82rem;" />
+      <input type="text" value="${esc(r.allergens)}" placeholder="アレルゲン（・区切り）" onchange="updateAllergy(${i},'allergens',this.value)"
+        style="flex:2;min-width:140px;padding:0.3rem 0.5rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.82rem;" />
+      <select onchange="updateAllergy(${i},'severity',this.value)"
+        style="padding:0.3rem 0.4rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.82rem;">
+        <option ${r.severity==='高'?'selected':''}>高</option>
+        <option ${r.severity==='中'?'selected':''}>中</option>
+        <option ${(!r.severity||r.severity==='低')?'selected':''}>低</option>
+      </select>
+      <input type="text" value="${esc(r.note||'')}" placeholder="対応・備考" onchange="updateAllergy(${i},'note',this.value)"
+        style="flex:2;min-width:120px;padding:0.3rem 0.5rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.82rem;" />
+      <button onclick="removeAllergy(${i})" style="padding:0.25rem 0.5rem;background:white;border:1px solid var(--gray-border);border-radius:5px;cursor:pointer;color:var(--danger);font-size:0.78rem;">✕</button>
+    </div>`).join('') +
+    `<button onclick="addAllergy()" style="margin-top:0.4rem;padding:0.4rem 0.9rem;background:white;border:1.5px dashed #dc2626;border-radius:6px;cursor:pointer;color:#dc2626;font-size:0.82rem;font-family:inherit;">+ 参加者を追加</button>`;
+}
+function updateAllergy(i, key, v) { const a=getAllergy(); a[i][key]=v; saveAllergy(a); }
+function removeAllergy(i) { const a=getAllergy(); a.splice(i,1); saveAllergy(a); renderAllergyEditor(); }
+function addAllergy() { const a=getAllergy(); a.push({name:'',group:'',allergens:'',severity:'低',note:''}); saveAllergy(a); renderAllergyEditor(); }
+
+function importAllergyCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const lines = e.target.result.split('\n').filter(l => l.trim());
+    const data = lines.map(line => {
+      const cols = line.split(',').map(c => c.trim().replace(/^"|"$/g,''));
+      return { name: cols[0]||'', group: cols[1]||'', allergens: cols[2]||'', severity: cols[3]||'低', note: cols[4]||'' };
+    });
+    saveAllergy(data);
+    renderAllergyEditor();
+    showToast(`${data.length}件を読み込みました`);
+    input.value = '';
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function downloadAllergyCSV() {
+  const data = getAllergy();
+  const header = '氏名,グループ,アレルゲン,重症度,対応・備考\n';
+  const rows = data.map(r => [r.name,r.group,r.allergens,r.severity,r.note].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+header+rows], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'allergy_list.csv'; a.click();
+}
+
+// キャンセル規約
+function getCancelRules() { return JSON.parse(localStorage.getItem('camp_cancel') || '[]'); }
+function saveCancelRules(r) { localStorage.setItem('camp_cancel', JSON.stringify(r)); }
+function openCancelEdit() { renderCancelEditor(); document.getElementById('cancel-modal').classList.add('active'); }
+function closeCancelModal() { document.getElementById('cancel-modal').classList.remove('active'); }
+
+function renderCancelEditor() {
+  const rules = getCancelRules();
+  const el = document.getElementById('cancel-editor');
+  el.innerHTML = rules.map((r, i) => `
+    <div style="border:1px solid var(--gray-border);border-radius:8px;margin-bottom:0.6rem;overflow:hidden;">
+      <div style="background:var(--gray-bg);padding:0.5rem 0.9rem;display:flex;gap:0.5rem;align-items:center;">
+        <input type="text" value="${esc(r.title)}" placeholder="例：7日前以降のキャンセル" onchange="updateCancel(${i},'title',this.value)"
+          style="flex:1;padding:0.3rem 0.6rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.85rem;font-weight:600;" />
+        <button onclick="removeCancel(${i})" style="padding:0.25rem 0.6rem;background:white;border:1px solid var(--gray-border);border-radius:5px;cursor:pointer;color:var(--danger);font-size:0.78rem;">削除</button>
+      </div>
+      <div style="padding:0.5rem 0.9rem;">
+        <textarea onchange="updateCancel(${i},'body',this.value)" placeholder="詳細内容を入力..."
+          style="width:100%;min-height:70px;padding:0.4rem 0.6rem;border:1px solid var(--gray-border);border-radius:5px;font-family:inherit;font-size:0.85rem;resize:vertical;">${esc(r.body)}</textarea>
+      </div>
+    </div>`).join('');
+}
+function updateCancel(i, key, v) { const r=getCancelRules(); r[i][key]=v; saveCancelRules(r); }
+function removeCancel(i) { const r=getCancelRules(); r.splice(i,1); saveCancelRules(r); renderCancelEditor(); }
+function addCancelRule() {
+  const r=getCancelRules();
+  r.push({title:'',body:''});
+  saveCancelRules(r);
+  renderCancelEditor();
+}
+
+// ===== RICH TEXT =====
+function fmt(cmd) { document.getElementById('editor').focus(); document.execCommand(cmd, false, null); }
+function fmt2(cmd) { document.getElementById('edit-editor').focus(); document.execCommand(cmd, false, null); }
+function setFontSize(v) { if (v) { document.getElementById('editor').focus(); document.execCommand('fontSize', false, v); } }
+function setFontSize2(v) { if (v) { document.getElementById('edit-editor').focus(); document.execCommand('fontSize', false, v); } }
+function setColor(v) { document.getElementById('editor').focus(); document.execCommand('foreColor', false, v); }
+function setColor2(v) { document.getElementById('edit-editor').focus(); document.execCommand('foreColor', false, v); }
+function insertLink() {
+  document.getElementById('editor').focus();
+  const url = prompt('リンクURLを入力:');
+  if (url) document.execCommand('createLink', false, url);
+}
+function insertLink2() {
+  document.getElementById('edit-editor').focus();
+  const url = prompt('リンクURLを入力:');
+  if (url) document.execCommand('createLink', false, url);
+}
+
+// ===== MEDIA =====
+function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('dragover'); }
+function handleDragLeave() { document.getElementById('upload-zone').classList.remove('dragover'); }
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+}
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      newMediaFiles.push({ name: file.name, data: e.target.result, type: file.type });
+      renderNewPreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function handleEditFiles(files) {
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      editMediaFiles.push({ name: file.name, data: e.target.result, type: file.type });
+      renderEditPreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function renderNewPreviews() {
+  const el = document.getElementById('media-preview');
+  el.innerHTML = newMediaFiles.map((f, i) => `
+    <div class="media-thumb">
+      ${f.type.startsWith('video') ? `<video src="${f.data}" muted></video>` : `<img src="${f.data}" />`}
+      <button class="remove-media" onclick="removeNewMedia(${i})">✕</button>
+    </div>`).join('');
+}
+function removeNewMedia(i) { newMediaFiles.splice(i, 1); renderNewPreviews(); }
+function renderEditPreviews() {
+  const existing = (editingId !== null ? getPosts().find(p => p.id === editingId)?.media || [] : []);
+  const el = document.getElementById('edit-media-preview');
+  const existingHTML = existing.map((f, i) => `
+    <div class="media-thumb">
+      ${f.type.startsWith('video') ? `<video src="${f.data}" muted></video>` : `<img src="${f.data}" />`}
+      <button class="remove-media" onclick="removeExistingMedia(${i})">✕</button>
+    </div>`).join('');
+  const newHTML = editMediaFiles.map((f, i) => `
+    <div class="media-thumb">
+      ${f.type.startsWith('video') ? `<video src="${f.data}" muted></video>` : `<img src="${f.data}" />`}
+      <button class="remove-media" onclick="removeEditMedia(${i})">✕</button>
+    </div>`).join('');
+  el.innerHTML = existingHTML + newHTML;
+}
+function removeExistingMedia(i) {
+  const posts = getPosts();
+  const idx = posts.findIndex(p => p.id === editingId);
+  if (idx !== -1) { posts[idx].media.splice(i, 1); savePosts(posts); renderEditPreviews(); }
+}
+function removeEditMedia(i) { editMediaFiles.splice(i, 1); renderEditPreviews(); }
+
+// ===== DATA =====
+function getPosts() { return JSON.parse(localStorage.getItem('camp_posts') || '[]'); }
+function savePosts(posts) { localStorage.setItem('camp_posts', JSON.stringify(posts)); }
+
+function submitPost() {
+  const dt = document.getElementById('post-datetime').value;
+  const title = document.getElementById('post-title').value.trim();
+  const body = document.getElementById('editor').innerHTML.trim();
+  if (!dt || !title || !body || body === '') { showToast('日時・タイトル・本文を入力してください'); return; }
+
+  const posts = getPosts();
+  posts.unshift({
+    id: Date.now(),
+    datetime: dt,
+    title,
+    body,
+    media: [...newMediaFiles]
+  });
+  savePosts(posts);
+  newMediaFiles = [];
+  document.getElementById('editor').innerHTML = '';
+  document.getElementById('post-title').value = '';
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  document.getElementById('post-datetime').value = local.toISOString().slice(0, 16);
+  renderPostList();
+  showToast('投稿しました！');
+}
+
+function renderPostList() {
+  const posts = getPosts();
+  const el = document.getElementById('post-list');
+  if (posts.length === 0) {
+    el.innerHTML = '<div class="empty-state">まだ投稿がありません</div>';
+    return;
+  }
+  el.innerHTML = posts.map((p, i) => `
+    <div class="post-item" id="post-${p.id}">
+      <div class="post-meta">
+        <div class="post-datetime">${formatDt(p.datetime)}</div>
+        <div class="post-title-text">${escapeHtml(p.title)}</div>
+        <div class="post-excerpt">${stripHtml(p.body)}</div>
+      </div>
+      <div class="post-actions">
+        <button class="btn-move" onclick="movePost(${i}, -1)" title="上へ">▲</button>
+        <button class="btn-move" onclick="movePost(${i}, 1)" title="下へ">▼</button>
+        <button class="btn-edit" onclick="openEditModal(${p.id})">編集</button>
+        <button class="btn-danger" onclick="deletePost(${p.id})">削除</button>
+      </div>
+    </div>`).join('');
+}
+
+function movePost(i, dir) {
+  const posts = getPosts();
+  const j = i + dir;
+  if (j < 0 || j >= posts.length) return;
+  [posts[i], posts[j]] = [posts[j], posts[i]];
+  savePosts(posts);
+  renderPostList();
+}
+
+function deletePost(id) {
+  if (!confirm('この記事を削除しますか？')) return;
+  const posts = getPosts().filter(p => p.id !== id);
+  savePosts(posts);
+  renderPostList();
+  showToast('削除しました');
+}
+
+// ===== EDIT MODAL =====
+function openEditModal(id) {
+  editingId = id;
+  editMediaFiles = [];
+  const post = getPosts().find(p => p.id === id);
+  document.getElementById('edit-datetime').value = post.datetime;
+  document.getElementById('edit-title').value = post.title;
+  document.getElementById('edit-editor').innerHTML = post.body;
+  renderEditPreviews();
+  document.getElementById('edit-modal').classList.add('active');
+}
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('active');
+  editingId = null;
+  editMediaFiles = [];
+}
+function saveEdit() {
+  const posts = getPosts();
+  const idx = posts.findIndex(p => p.id === editingId);
+  if (idx === -1) return;
+  posts[idx].datetime = document.getElementById('edit-datetime').value;
+  posts[idx].title = document.getElementById('edit-title').value.trim();
+  posts[idx].body = document.getElementById('edit-editor').innerHTML.trim();
+  posts[idx].media = [...(posts[idx].media || []), ...editMediaFiles];
+  savePosts(posts);
+  renderPostList();
+  closeEditModal();
+  showToast('保存しました！');
+}
+
+// ===== UTILS =====
+function formatDt(dt) {
+  const d = new Date(dt);
+  return `${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+}
+function stripHtml(html) { return html.replace(/<[^>]+>/g, ''); }
+function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
