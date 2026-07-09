@@ -359,7 +359,7 @@ function viewerLogout() {
 
 function initViewer() {
   const photoUrl = localStorage.getItem('photo_folder_url');
-  if (photoUrl) {
+  if (true) {
     document.getElementById('header-links').style.display = 'flex';
     document.getElementById('photo-btn').style.display = 'inline-flex';
   } else {
@@ -370,8 +370,7 @@ function initViewer() {
 }
 
 function openPhoto() {
-  const url = localStorage.getItem('photo_folder_url');
-  if (url) window.open(url, '_blank');
+  window.open('https://drive.google.com/drive/folders/1hDZAqkoZpBXtXL9a3ozBpD8n_3Z-WqrZ?usp=sharing', '_blank');
 }
 
 function getPosts() {
