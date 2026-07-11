@@ -718,7 +718,6 @@ async function initApp() {
 }
 
 // ===== QUICK LINKS =====
-await gasPost('saveSettings', { data: settings });
   const url = document.getElementById('photo-url-input').value.trim();
   if (url) {
     const settings = await gasGet('getSettings');
