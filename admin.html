@@ -680,10 +680,8 @@ async function gasGet(action) {
   return res.json();
 }
 async function gasPost(action, payload) {
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action, ...payload })
-  });
+  const data = JSON.stringify(Object.values(payload)[0]);
+  const res = await fetch(`${GAS_URL}?action=${action}&data=${encodeURIComponent(data)}`);
   return res.json();
 }
 
