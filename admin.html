@@ -676,7 +676,7 @@ let _cancel = [];
 
 // ===== GAS通信 =====
 async function gasGet(action) {
-  const res = await fetch(`${GAS_URL}?action=${action}`);
+  const res = await fetch(`${GAS_URL}?action=${action}&t=${Date.now()}`, { cache: 'no-store' });
   return res.json();
 }
 async function gasPost(action, payload) {
