@@ -511,6 +511,7 @@
             </div>
             <div class="tb-sep"></div>
             <button class="tb-btn" onclick="insertLink()">🔗 リンク</button>
+            <button class="tb-btn" onclick="insertImage()">🖼️ 画像</button>
           </div>
           <div id="editor" contenteditable="true" data-placeholder="本文を入力..."></div>
         </div>
@@ -571,6 +572,7 @@
           <input type="color" id="edit-text-color" value="#1a1d23" onchange="setColor2(this.value)" style="width:26px;height:26px;border:1px solid var(--gray-border);border-radius:5px;cursor:pointer;padding:1px;" />
           <div class="tb-sep"></div>
           <button class="tb-btn" onclick="insertLink2()">🔗 リンク</button>
+          <button class="tb-btn" onclick="insertImage2()">🖼️ 画像</button>
         </div>
         <div id="edit-editor" contenteditable="true" style="min-height:160px;padding:0.75rem 1rem;border:1.5px solid var(--gray-border);border-radius:0 0 8px 8px;outline:none;font-family:inherit;font-size:0.95rem;line-height:1.75;color:var(--text);"></div>
       </div>
@@ -898,6 +900,16 @@ function insertLink2() {
   document.getElementById('edit-editor').focus();
   const url = prompt('リンクURLを入力:');
   if (url) document.execCommand('createLink', false, url);
+}
+ function insertImage() {
+  document.getElementById('editor').focus();
+  const url = prompt('画像のURLを入力（Google DriveなどのURL）:');
+  if (url) document.execCommand('insertImage', false, url);
+}
+function insertImage2() {
+  document.getElementById('edit-editor').focus();
+  const url = prompt('画像のURLを入力（Google DriveなどのURL）:');
+  if (url) document.execCommand('insertImage', false, url);
 }
 
 // ===== MEDIA =====
