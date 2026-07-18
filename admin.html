@@ -576,14 +576,6 @@
         </div>
         <div id="edit-editor" contenteditable="true" style="min-height:160px;padding:0.75rem 1rem;border:1.5px solid var(--gray-border);border-radius:0 0 8px 8px;outline:none;font-family:inherit;font-size:0.95rem;line-height:1.75;color:var(--text);"></div>
       </div>
-      <div class="form-group">
-        <label class="form-label">画像・動画（追加）</label>
-        <div class="upload-zone" onclick="document.getElementById('edit-file-input').click()" style="padding:1rem;">
-          <div class="upload-zone-text"><strong>クリックして追加</strong></div>
-        </div>
-        <input type="file" id="edit-file-input" multiple accept="image/*,video/*" style="display:none" onchange="handleEditFiles(this.files)" />
-        <div class="media-preview" id="edit-media-preview"></div>
-      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-edit" onclick="closeEditModal()">キャンセル</button>
